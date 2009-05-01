@@ -3,6 +3,11 @@ require 'hpricot'
 require 'open-uri'
 require 'yaml'
 
+# can we just check number of tickets per milestone and how
+# that changes daily? The velocity might need to take into
+# account that some tickets are moved from milestone to milesont
+# instead of closed
+
 @config = YAML::load_file('config.yml')
 @activity = {}
 
@@ -66,7 +71,14 @@ def add_activity_for(date)
 end
 
 load_activity
-add_activity_for("2/17/2009")
+
+date = Date.parse("2009-02-01")
+end_date = Date.parse("2009-02-17")
+while(date < end_date)
+  add_activity_for(date.to_s)
+  date = date.next
+end
+
 save_activity
 
 puts @activity.inspect
