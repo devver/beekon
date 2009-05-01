@@ -6,20 +6,28 @@ require 'ruby-debug'
 
 module Beekon
 
-  class TicketStats
+  class TicketsClosed
     
-    def initialize(project)
+    def initialize(project,start_date,end_date)
       @project = project
-    end
-    
-    def closed_during(start_date,end_date)
-      tickets_closed = []
-      [start_date...end_date].each do |date|
-        tickets_closed << closed_on(date)
-      end
-      tickets_closed
+      @start_date = start_date
+      @end_date = end_date
     end
 
+    def print_summary
+      puts "Weekly summary from #{@start_date.inspect} to #{@end_date.inspect}"
+      puts "  day             || tickets closed "
+      puts "============================"
+      total = 0
+      (@start_date..@end_date).each do |date|
+        closed = closed_on(date).length
+        total += closed
+        puts "#{date.inspect} :: #{closed}"
+      end
+      puts "============================"
+      puts "Total: #{total}"
+    end
+    
     def closed_on(date)
       @project.tickets(:q => "state:closed updated:'#{date.strftime('%m/%d/%Y')}'")
     end
@@ -42,7 +50,7 @@ Main do
 
   def run
     with_project do |project|
-      puts Beekon::TicketStats.new(project).closed_on(Date.today).length
+      Beekon::TicketsClosed.new(project,Date.today-7,Date.today).print_summary
     end
   end
 end
