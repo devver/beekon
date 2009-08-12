@@ -29,7 +29,7 @@ module Beekon
     end
     
     def closed_on(date)
-      @project.tickets(:q => "state:closed updated:'#{date.strftime('%m/%d/%Y')}'")
+      @project.tickets(:q => "state:resolved updated:'#{date.strftime('%m/%d/%Y')}'")
     end
     
   end
@@ -50,7 +50,9 @@ Main do
 
   def run
     with_project do |project|
-      Beekon::TicketsClosed.new(project,Date.today-7,Date.today).print_summary
+      adjust = 0 # -1
+      Beekon::TicketsClosed.new(project,Date.today-6+adjust,Date.today+adjust).print_summary
+      #Beekon::TicketsClosed.new(project,Date.parse("5/15/2009"),Date.parse("5/21/2009")).print_summary
     end
   end
 end
