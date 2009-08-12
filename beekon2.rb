@@ -39,7 +39,9 @@ module Beekon
     def ticket_points(closed_tickets)
       points = 0
       closed_tickets.each do |ticket|
-        points += ticket.attributes['tag'].match(/[0-9]*pt/).to_s.sub('pt','').to_i
+        if (ticket.attributes['tag'] && ticket.attributes['tag'] != '' && ticket.attributes['tag'].match(/[0-9]*pt/))
+          points += ticket.attributes['tag'].match(/[0-9]*pt/).to_s.sub('pt','').to_i
+        end
       end
       points
     end
