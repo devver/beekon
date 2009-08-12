@@ -16,20 +16,32 @@ module Beekon
 
     def print_summary
       puts "Weekly summary from #{@start_date.inspect} to #{@end_date.inspect}"
-      puts "  day             || tickets closed "
-      puts "============================"
+      puts " day   :: tickets closed  :: points closed"
+      puts "=" * 35
       total = 0
+      total_points = 0
       (@start_date..@end_date).each do |date|
-        closed = closed_on(date).length
+        closed_tickets = closed_on(date)
+        points = ticket_points(closed_tickets)
+        closed = closed_tickets.length
         total += closed
-        puts "#{date.inspect} :: #{closed}"
+        total_points += points
+        puts "#{date.inspect} :: #{closed} :: #{points}pts"
       end
-      puts "============================"
-      puts "Total: #{total}"
+      puts "=" * 35
+      puts "Total: #{total}    Total Points: #{total_points}"
     end
     
     def closed_on(date)
       @project.tickets(:q => "state:resolved updated:'#{date.strftime('%m/%d/%Y')}'")
+    end
+
+    def ticket_points(closed_tickets)
+      points = 0
+      closed_tickets.each do |ticket|
+        points += ticket.attributes['tag'].match(/[0-9]*pt/).to_s.sub('pt','').to_i
+      end
+      points
     end
     
   end
